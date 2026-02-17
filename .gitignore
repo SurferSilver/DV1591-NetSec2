@@ -1,0 +1,65 @@
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+*.idx
+*.ilg
+*.ind
+*.glo
+*.gls
+*.glg
+*.acn
+*.acr
+*.alg
+*.ist
+*.nlo
+*.nls
+*.xdy
+*.mw
+
+# BibTeX/Biber
+*.bbl-SAVE-ERROR
+*.bcf-SAVE-ERROR
+
+# PDF (uncomment to ignore)
+# *.pdf
+
+# latexmk
+*.latexmain
+
+# pdflatex
+*.pdfsync
+
+# xelatex/lualatex
+*.xdv
+
+# pythontex
+*.pytxcode
+pythontex-files-*/
+
+# minted
+_minted*/
+
+# Editor backup/temp files
+*.bak
+*~
+\#*\#
+.#*
+
+# OS files
+.DS_Store
+Thumbs.db
