@@ -17,7 +17,7 @@
 \maketitle
 
 \begin{abstract}
-This report examines emerging trends in the weaponization of artificial intelligence tools by threat actors. Through analysis of three case studies—PROMPTSTEAL, QUIETVAULT, and PROMPTFLUX—we document how both state-sponsored and financially motivated adversaries are leveraging large language models (LLMs) for malware development, evasion, and data exfiltration. Key findings include just-in-time AI usage in malware operations, social engineering techniques to bypass AI safety guardrails, and the increased presence of AI-powered ransomware in illicit marketplaces.
+This report examines emerging trends in the weaponization of artificial intelligence tools by threat actors. Through analysis of three case studies—PROMPTSTEAL, QUIETVAULT, and PROMPTFLUX—we document how both state-sponsored and financially motivated adversaries are leveraging large language models (LLMs) for malware development, evasion, and data exfiltration. The analysis draws from observations by Google Cloud Threat Intelligence, CERT-UA, and SentinelOne Labs, revealing a significant shift in how adversaries integrate generative AI into their operational tradecraft.
 \end{abstract}
 
 \tableofcontents
@@ -25,46 +25,44 @@ This report examines emerging trends in the weaponization of artificial intellig
 
 \section{Introduction}
 
-The integration of artificial intelligence into cybersecurity threats represents a significant evolution in the threat landscape. Recent observations have revealed several concerning trends in how threat actors are exploiting AI capabilities:
+The integration of artificial intelligence into cybersecurity threats represents a significant evolution in the threat landscape. As large language models have become increasingly accessible through both cloud APIs and locally deployable solutions, threat actors have begun incorporating these tools into their operational workflows in ways that demand new defensive approaches.
 
-\begin{itemize}
-    \item Just-in-time AI usage in malware operations, exemplified by PROMPTFLUX and PROMPTSTEAL.
-    \item Social engineering prompts designed to bypass AI safety guardrails.
-    \item Higher presence of AI-powered ransomware in illicit marketplaces.
-    \item Continued misuse of AI by state-sponsored actors, including APT28 and North Korean groups.
-\end{itemize}
+Google Cloud Threat Intelligence has documented a notable influx of AI-related malware activity targeting their LLM services. Their observations reveal that adversaries are exploiting generative AI across the full spectrum of the attack lifecycle—from initial reconnaissance and social engineering through payload development and post-compromise data analysis. This trend is not limited to sophisticated state-sponsored actors; financially motivated cybercriminals are also adopting these techniques, lowering the barrier to entry for advanced attack capabilities.
 
-This report provides detailed analysis of three case studies that illustrate these trends and offers recommendations for detection and mitigation.
+Several key patterns have emerged from recent threat intelligence. First, malware authors are implementing ``just-in-time'' AI usage, where malicious code queries LLM APIs at runtime to dynamically generate commands or obfuscate payloads. This approach, exemplified by the PROMPTFLUX and PROMPTSTEAL campaigns, allows malware to evade static signature detection by producing unique code variants on each execution. Second, threat actors have developed social engineering techniques specifically designed to bypass AI safety guardrails, often framing malicious requests as educational exercises or legitimate development tasks. Third, illicit marketplaces have shown increased availability of AI-powered ransomware tools, suggesting that these techniques are proliferating within the criminal underground. Finally, state-sponsored actors—particularly APT28 (associated with Russian military intelligence) and various North Korean groups—continue to refine their use of AI tools for espionage and financial theft operations.
+
+This report provides detailed analysis of three case studies that illustrate these trends: PROMPTSTEAL, a state-sponsored campaign leveraging cloud LLMs for reconnaissance; QUIETVAULT, a credential stealer that exploits locally hosted AI tools; and PROMPTFLUX, an experimental malware family demonstrating AI-powered polymorphic capabilities.
 
 \section{Case Study 1: PROMPTSTEAL}
 
-\subsection{LAMEHUG Overview}
+\subsection{LAMEHUG Technical Analysis}
 
-LAMEHUG is a malicious program developed using the Python programming language. It leverages the large language model \texttt{Qwen 2.5-Coder-32B-Instruct} through the API of the Hugging Face service (\url{https://huggingface.co}) to dynamically generate commands based on statically defined text descriptions for subsequent execution on the target computer.
+LAMEHUG represents a significant evolution in how state-sponsored actors integrate artificial intelligence into their malware operations. Developed in Python, this malicious program demonstrates a novel approach to command generation by leveraging the Qwen 2.5-Coder-32B-Instruct large language model through the Hugging Face API at \url{https://huggingface.co}.
 
-The malware's capabilities include the collection and storage of basic system information in the file \texttt{\%PROGRAMDATA\%\textbackslash info\textbackslash info.txt}. This information encompasses hardware specifications, running processes, services, and network connections. Additionally, the malware performs recursive searches for Microsoft Office documents (including \texttt{.TXT} and \texttt{.PDF} files) within the \texttt{Documents}, \texttt{Downloads}, and \texttt{Desktop} directories, copying identified files to the folder \texttt{\%PROGRAMDATA\%\textbackslash info\textbackslash}.
+The malware's operational concept centers on ``just-in-time'' command generation. Rather than hardcoding specific reconnaissance commands—which would create static signatures detectable by security tools—LAMEHUG stores natural language descriptions of desired actions. At runtime, these descriptions are submitted to the cloud-hosted LLM, which generates the corresponding shell commands for execution on the victim system. This approach provides operational flexibility, as the same malware can adapt its behavior across different system configurations without requiring code modifications.
 
-Exfiltration of collected information and files can be conducted through SFTP or HTTP POST requests, depending on the malware variant. Notably, the LLM prompts were crafted to resemble CTF (Capture The Flag) student exercises, a social engineering technique designed to bypass AI guardrails.
+The reconnaissance capabilities implemented through this technique are comprehensive. LAMEHUG collects and stores basic system information in the file \texttt{\%PROGRAMDATA\%\textbackslash info\textbackslash info.txt}, including hardware specifications, running processes, active services, and network connections. The malware also performs recursive searches for documents of intelligence value—specifically Microsoft Office files, PDFs, and plain text documents—within the user's Documents, Downloads, and Desktop directories. Identified files are copied to a staging folder at \texttt{\%PROGRAMDATA\%\textbackslash info\textbackslash} for subsequent exfiltration.
 
-\subsection{Target Profile}
+Data exfiltration is accomplished through either SFTP connections or HTTP POST requests, depending on the malware variant. The collected information undergoes encoding before transmission to adversary-controlled infrastructure, providing a degree of obfuscation for the exfiltrated data.
 
-PROMPTSTEAL operations have been observed targeting:
-\begin{itemize}
-    \item Ukrainian organizations.
-    \item Windows-based systems.
-    \item Document theft and system reconnaissance objectives.
-\end{itemize}
+A particularly noteworthy aspect of LAMEHUG is the social engineering applied to the LLM interactions themselves. The prompts submitted to Hugging Face were crafted to resemble Capture The Flag (CTF) competition exercises or student homework assignments. This framing exploits the tendency of AI safety systems to permit educational or learning-oriented requests, effectively bypassing guardrails designed to prevent malicious use.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{Images/LAMEHUG.png}
-    \caption{Example of the LAMEHUG infection chain.}
+    \caption{Example of the LAMEHUG infection chain demonstrating the integration of cloud LLM queries into the attack workflow.}
     \label{fig:lamehug}
 \end{figure}
 
+\subsection{Target Profile and Campaign Context}
+
+The PROMPTSTEAL campaign has been observed primarily targeting Ukrainian organizations, consistent with the broader pattern of Russian cyber operations against Ukraine. The malware is designed specifically for Windows environments, reflecting the prevalence of this platform in target organizations.
+
+The campaign's objectives align with traditional espionage priorities: document theft and system reconnaissance. By automating the identification and collection of potentially sensitive documents, the attackers can efficiently gather intelligence materials for subsequent analysis, likely by human analysts rather than automated systems.
+
 \subsection{Attribution}
 
-PROMPTSTEAL has been attributed to APT28, a state-sponsored Russian threat group also known as Fancy Bear. This attribution was reported by CERT-UA with moderate confidence, who documented the associated LAMEHUG malware in June 2025.
+CERT-UA reported the LAMEHUG malware in June 2025, attributing the activity to APT28 with moderate confidence. APT28, also known as Fancy Bear, Sofacy, and Pawn Storm, is a threat actor associated with Russia's Main Intelligence Directorate (GRU). The group has a well-documented history of conducting cyber espionage operations against government, military, and critical infrastructure targets, particularly in countries perceived as adversarial to Russian interests.
 
 \begin{figure}[H]
     \centering
@@ -73,128 +71,109 @@ PROMPTSTEAL has been attributed to APT28, a state-sponsored Russian threat group
     \label{fig:fancybear}
 \end{figure}
 
+The attribution is based on technical indicators, targeting patterns, and operational tradecraft consistent with previous APT28 campaigns. However, the moderate confidence level reflects the inherent challenges in definitively attributing cyber operations, particularly when adversaries actively employ deception techniques.
+
 \subsection{Indicators of Compromise}
 
-Key indicators associated with PROMPTSTEAL include:
-\begin{itemize}
-    \item Email attachments with names such as ``Appendix.pdf.zip'' and ``AI-generator-uncensored-Canvas-PRO-v-v0.9.exe''.
-    \item API calls to Hugging Face services from infected hosts.
-    \item Creation of the directory \texttt{C:\textbackslash ProgramData\textbackslash info}.
-    \item Blind execution of dynamically generated shell commands.
-    \item Exfiltration of collected data to adversary-controlled servers following encoding.
-\end{itemize}
+Defenders should monitor for several indicators associated with PROMPTSTEAL operations. Initial access typically occurs through spear-phishing emails containing malicious attachments. Observed filename patterns include ``Appendix.pdf.zip'' and ``AI-generator-uncensored-Canvas-PRO-v-v0.9.exe''—the latter apparently designed to appeal to users interested in AI image generation tools.
 
-\subsection{Recommended Mitigations}
+Network-based indicators include API calls to Hugging Face services originating from hosts that should not legitimately require such access. Host-based indicators include the creation of the staging directory at \texttt{C:\textbackslash ProgramData\textbackslash info}, the presence of dynamically generated shell command execution patterns, and encoded data being prepared for exfiltration.
 
-Organizations should implement the following defensive measures:
-\begin{itemize}
-    \item Outgoing traffic filtering and API traffic inspection.
-    \item Behavioral detection systems capable of identifying command execution chains.
-    \item File system monitoring for bulk document copying activities.
-    \item Credential hygiene practices to prevent API token theft.
-\end{itemize}
+\subsection{Defensive Recommendations}
+
+Effective defense against PROMPTSTEAL and similar threats requires a multi-layered approach. Network defenders should implement outgoing traffic filtering that specifically inspects and controls API traffic to AI service providers. While blocking all such traffic may not be feasible in organizations that legitimately use these services, anomalous access patterns from unexpected hosts should trigger alerts.
+
+Endpoint security solutions should incorporate behavioral detection capabilities that can identify command execution chains characteristic of LLM-generated reconnaissance activity. Traditional signature-based detection is unlikely to be effective against dynamically generated commands, making behavioral analysis essential.
+
+File system monitoring should be configured to detect bulk document copying operations, particularly when documents are being staged to unusual locations. Finally, organizations should maintain strict credential hygiene practices, as stolen API tokens could enable attackers to query LLM services without deploying infrastructure that might be detected.
 
 \section{Case Study 2: QUIETVAULT}
 
-\subsection{Overview}
+\subsection{Technical Overview}
 
-QUIETVAULT represents a credential and cryptocurrency wallet stealer with the following characteristics:
-\begin{itemize}
-    \item \textbf{Type:} Credential and wallet stealer.
-    \item \textbf{Platform:} macOS and Linux.
-    \item \textbf{Language:} JavaScript.
-    \item \textbf{Novel capability:} Abuse of victim's locally hosted LLMs (specifically OLLAMA).
-    \item \textbf{Status:} Observed in active operations.
-\end{itemize}
+QUIETVAULT represents an innovative approach to credential theft that exploits the growing deployment of locally hosted AI tools. Unlike PROMPTSTEAL's reliance on cloud-based LLM services, QUIETVAULT targets systems where users have installed local AI inference capabilities, particularly the OLLAMA framework, turning the victim's own AI tools against them.
+
+The malware is implemented in JavaScript and targets macOS and Linux systems—platforms where developer adoption of local AI tools has been particularly strong. This targeting reflects the reality that users interested in running local LLMs tend to be developers and technically sophisticated individuals, who often have access to valuable credentials, API tokens, and in many cases, cryptocurrency wallets.
 
 \subsection{Target Profile}
 
-QUIETVAULT operations target:
-\begin{itemize}
-    \item Individual users and developers.
-    \item Systems with locally installed AI/LLM command-line tools.
-    \item Environments storing cryptocurrency wallets and secrets.
-    \item Common targets include home directories and user-level configuration paths.
-\end{itemize}
+QUIETVAULT operations focus on individual users and developers rather than enterprise targets. The malware specifically seeks systems with locally installed AI and LLM command-line tools, recognizing that such installations indicate a technically sophisticated user likely to possess valuable credentials.
 
-\subsection{Attribution}
+Primary targets include cryptocurrency wallets and their associated seed phrases or private keys, authentication credentials stored in configuration files, API tokens for cloud services, and SSH keys and other authentication materials. The malware focuses on home directories and user-level configuration paths where such sensitive materials are commonly stored.
 
-No public attribution to a named threat actor has been established. The malware was observed by Google Threat Intelligence, with probable alternatives existing on other platforms. The tactics employed are consistent with financially motivated cybercrime, focusing on cryptocurrency theft and credential harvesting.
+\subsection{Attribution and Motivation}
 
-\subsection{Attack Technique}
+No public attribution to a named threat actor has been established for QUIETVAULT. Google Threat Intelligence, which first documented the malware, noted that similar variants likely exist on other platforms. The operational focus on cryptocurrency theft and credential harvesting strongly suggests financially motivated cybercrime rather than state-sponsored espionage.
 
-QUIETVAULT employs a novel attack methodology:
-\begin{enumerate}
-    \item The malware enumerates locally installed LLM tools on the target system.
-    \item A malicious natural-language prompt is injected into the local LLM.
-    \item The LLM is instructed to reason over filesystem contents and identify wallet-, password-, and token-related files while avoiding privileged directories.
-\end{enumerate}
+\subsection{Attack Methodology}
+
+QUIETVAULT's attack methodology demonstrates sophisticated understanding of how local AI tools can be weaponized. Upon execution, the malware first enumerates the system to identify locally installed LLM tools, with particular focus on OLLAMA installations.
+
+Once a local LLM is identified, QUIETVAULT injects a carefully crafted natural language prompt into the AI tool. This prompt instructs the LLM to reason over filesystem contents and identify files likely to contain cryptocurrency wallet information, passwords, authentication tokens, and similar sensitive data. Critically, the prompt includes instructions to avoid privileged system directories, ensuring the reconnaissance remains within user-accessible paths and does not trigger security mechanisms monitoring for privilege escalation.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{Images/QUIETVAULT.png}
-    \caption{Example QUIETVAULT prompt injected into local LLM.}
+    \caption{Example of a QUIETVAULT prompt injected into a local LLM to identify sensitive files.}
     \label{fig:quietvault}
 \end{figure}
 
-\subsection{Indicators of Compromise and Exfiltration}
+This approach provides several advantages to the attacker. The reconnaissance is performed by legitimate software already present on the system, reducing the behavioral footprint of the malware itself. The LLM's reasoning capabilities enable identification of sensitive files based on content patterns and naming conventions, rather than requiring hardcoded file paths. Additionally, because the AI analysis occurs locally, no network traffic is generated during this phase—the malware only needs to communicate externally during the final exfiltration stage.
 
-Key indicators include:
-\begin{itemize}
-    \item Unexpected invocation of local LLM CLI tools.
-    \item Recursive filesystem enumeration from user context.
-    \item Base64-encoded data staged for exfiltration.
-    \item Creation of new GitHub repositories using local credentials.
-\end{itemize}
+\subsection{Exfiltration Techniques}
 
-\subsection{Recommended Mitigations}
+After the local LLM identifies files of interest, QUIETVAULT stages the data for exfiltration using Base64 encoding. The malware then employs a creative exfiltration channel: it uses locally stored GitHub credentials to create new repositories and upload the stolen data. This technique leverages legitimate services and the victim's own authentication credentials, making the traffic appear normal and bypassing many network security controls.
 
-Defensive measures should include:
-\begin{itemize}
-    \item Monitoring execution of local AI/LLM tooling.
-    \item Restricting filesystem access of AI CLI tools through context and access limitations.
-    \item Detection of anomalous GitHub repository creation, including implementing MFA for repository creation.
-    \item Endpoint detection capabilities for AI-assisted reconnaissance behavior.
-\end{itemize}
+Indicators of QUIETVAULT compromise include unexpected invocation of local LLM CLI tools, recursive filesystem enumeration patterns originating from user context, Base64-encoded data being staged in temporary locations, and the creation of new GitHub repositories without user initiation.
+
+\subsection{Defensive Recommendations}
+
+Defending against QUIETVAULT requires attention to the security implications of locally deployed AI tools. Organizations and individuals should monitor the execution of local AI and LLM tooling, establishing baselines for normal usage patterns and alerting on anomalies.
+
+Access controls should be implemented to restrict what filesystem paths AI CLI tools can access, limiting the potential for malicious reconnaissance even if prompt injection occurs. GitHub and similar services should be configured to require multi-factor authentication for repository creation, preventing attackers from silently creating exfiltration channels.
+
+Endpoint detection solutions should be updated to recognize AI-assisted reconnaissance behaviors, including the characteristic patterns of LLM-guided file enumeration and the staging of encoded data for exfiltration.
 
 \section{Case Study 3: PROMPTFLUX}
 
-\subsection{Overview}
+\subsection{Technical Overview}
 
-PROMPTFLUX is an experimental dropper malware written in VBScript with novel evasion capabilities:
-\begin{itemize}
-    \item \textbf{Type:} Experimental dropper malware (VBScript).
-    \item \textbf{Novel capability:} Evasion and obfuscation via queries to the Google Gemini API.
-\end{itemize}
+PROMPTFLUX represents perhaps the most concerning development in AI-enabled malware: the use of generative AI for automated polymorphism. This experimental dropper malware, implemented in VBScript, queries the Google Gemini API to continuously modify its own source code, producing functionally equivalent but syntactically distinct variants that evade signature-based detection.
+
+The core innovation lies in the ``StartThinkingRobot'' function, which interfaces with the Gemini API to request code modifications. Rather than using predefined mutation rules—as traditional polymorphic malware does—PROMPTFLUX leverages the LLM's understanding of code semantics to generate natural, varied transformations that maintain functionality while altering all surface-level indicators.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\linewidth]{Images/StartThinkingRobot.png}
-    \caption{VBScript ``StartThinkingRobot'' function used by PROMPTFLUX.}
+    \caption{The VBScript ``StartThinkingRobot'' function used by PROMPTFLUX to query the Gemini API for code obfuscation.}
     \label{fig:promptflux}
 \end{figure}
 
-Google has documented variations of PROMPTFLUX that rewrite the entire malware source code on an hourly basis, representing a significant advancement in polymorphic malware techniques powered by generative AI.
+\subsection{Operational Implications}
+
+Google has documented variations of PROMPTFLUX that rewrite the entire malware source code on an hourly basis. This frequency of mutation far exceeds what traditional polymorphic engines can achieve while maintaining code quality, and it presents significant challenges for defenders.
+
+Traditional signature-based detection relies on identifying static patterns within malicious code. When malware can regenerate itself continuously using AI-guided transformations, no such stable patterns exist. Each instance of the malware is effectively unique, requiring security tools to shift entirely to behavioral detection approaches.
+
+The implications extend beyond individual malware samples. If PROMPTFLUX-style techniques become widespread, the fundamental economics of malware detection shift in favor of attackers. Generating new, undetected variants becomes trivially cheap, while defenders face the computational burden of behavioral analysis for every potential threat.
 
 \section{Conclusion}
 
-The analysis of these three case studies reveals several significant trends in the threat landscape:
+The three case studies examined in this report collectively demonstrate that the integration of artificial intelligence into malicious operations represents a fundamental shift in the threat landscape rather than an incremental evolution. Each case study reveals different dimensions of this transformation, and together they paint a picture of adversaries who are rapidly adapting their tradecraft to exploit the capabilities that generative AI provides.
 
-\begin{enumerate}
-    \item \textbf{Increased AI-related malware activity:} Google has noted a large influx of AI-related malware targeting their LLM services.
-    
-    \item \textbf{Cloud-based LLM integration:} The integration of cloud-based LLMs enables rapid reconnaissance and dynamic command execution capabilities for attackers.
-    
-    \item \textbf{Generative obfuscation:} As demonstrated by PROMPTFLUX, generative AI allows malware to bypass traditional signature-based detection through continuous code regeneration.
-    
-    \item \textbf{Local AI exploitation:} QUIETVAULT demonstrates how local AI tools can be leveraged to analyze and extract sensitive data internally, without requiring external network communication during the analysis phase.
-    
-    \item \textbf{Defense requirements:} Effective defense against these threats requires a shift toward behavioral monitoring and API egress control, moving beyond traditional signature-based approaches.
-    
-    \item \textbf{Democratization of advanced capabilities:} The misuse of legitimate AI tools provides advanced capabilities to both state-sponsored and criminal actors, lowering the barrier to entry for sophisticated attacks.
-\end{enumerate}
+Google Cloud Threat Intelligence has documented a significant influx of AI-related malware targeting their LLM services, indicating that the experimental techniques observed in controlled research settings have transitioned into active operational use. The barrier between proof-of-concept and deployed threat has effectively collapsed for AI-enabled attack techniques.
 
-Organizations must adapt their security postures to address these emerging threats through enhanced monitoring of AI tool usage, behavioral analysis, and strict API traffic controls.
+The integration of cloud-based LLMs into malware operations, as demonstrated by PROMPTSTEAL, enables capabilities that were previously difficult or impractical to implement. Dynamic command generation allows malware to adapt to diverse target environments without requiring extensive pre-deployment testing. Reconnaissance that previously required hardcoded scripts or human operators can now be accomplished through natural language prompts, allowing attackers to specify intent rather than implementation details.
+
+PROMPTFLUX's generative obfuscation capabilities represent perhaps the most significant challenge to traditional defensive approaches. When malware can regenerate itself hourly using AI-guided transformations, signature-based detection becomes fundamentally ineffective. The economics of the attacker-defender relationship shift decisively: generating undetected variants becomes computationally trivial, while defenders must bear the burden of behavioral analysis for every potential threat.
+
+QUIETVAULT demonstrates that the threat extends beyond cloud-based AI services to encompass locally deployed tools. The growing adoption of local LLM frameworks creates new attack surfaces that defenders must consider. Malware that leverages the victim's own AI tools for reconnaissance generates minimal observable network traffic during the analysis phase, complicating detection efforts that rely on network monitoring.
+
+Perhaps most significantly, these developments democratize advanced attack capabilities. Sophisticated techniques that previously required specialized expertise—polymorphic code generation, adaptive reconnaissance, intelligent credential discovery—can now be implemented by adversaries with limited technical skills simply by crafting appropriate prompts. This democratization benefits both state-sponsored actors seeking operational flexibility and financially motivated criminals looking to scale their operations.
+
+Effective defense against these emerging threats requires organizations to fundamentally reconsider their security architectures. Traditional signature-based detection must be supplemented—and in some cases replaced—by behavioral monitoring that can identify malicious patterns regardless of surface-level code characteristics. API egress controls should be implemented to monitor and restrict communications with AI service providers from unexpected hosts. Local AI tool deployments must be treated as security-relevant applications requiring monitoring and access controls. Most importantly, security teams must develop institutional knowledge about AI-enabled attack techniques, ensuring that defenders understand how these tools can be weaponized and what defensive indicators to prioritize.
+
+The misuse of legitimate AI tools provides advanced capabilities to actors across the threat spectrum, from nation-state espionage services to criminal enterprises. As these techniques mature and proliferate, the organizations best positioned to defend themselves will be those that recognize the fundamental nature of this shift and adapt their security postures accordingly.
 
 \newpage
 \nocite{*}
