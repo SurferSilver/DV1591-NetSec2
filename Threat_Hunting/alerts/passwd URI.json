@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-07T07:17:38.242331+0100",
+  "src_ip": "204.76.203.73",
+  "src_port": "40252",
+  "dest_ip": "193.11.189.38",
+  "dest_port": "8080",
+  "host_name": "abbe2-HP-Compaq-Pro-4300-SFF-PC",
+  "proto": "TCP",
+  "alert": {
+    "signature": "ET WEB_SERVER /etc/passwd Detected in URI",
+    "signature_id": "2049400",
+    "severity": "2",
+    "action": "allowed",
+    "category": "Attempted Information Leak"
+  },
+  "http": {
+    "method": "GET",
+    "url": "/..%2F..%2F..%2F..%2F..%2F..%2Fetc%2Fpasswd",
+    "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:146.0) Gecko/20100101 Firefox/146.0",
+    "hostname": "193.11.189.38",
+    "protocol": "HTTP/1.1"
+  },
+  "rule": {
+    "id": "86601",
+    "description": "Suricata: Alert - ET WEB_SERVER /etc/passwd Detected in URI",
+    "level": 3,
+    "groups": ["ids", "suricata"]
+  }
+}

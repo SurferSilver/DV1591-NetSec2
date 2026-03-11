@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-03-03T03:03:04.307239+0100",
+  "src_ip": "154.81.14.244",
+  "src_port": "42424",
+  "dest_ip": "193.11.189.38",
+  "dest_port": "80",
+  "host_name": "abbe2-HP-Compaq-Pro-4300-SFF-PC",
+  "proto": "TCP",
+  "alert": {
+    "signature": "ET WEB_SERVER Generic PHP Remote File Include",
+    "signature_id": "2019957",
+    "severity": "1",
+    "action": "allowed",
+    "category": "Attempted User Privilege Gain"
+  },
+  "http": {
+    "method": "POST",
+    "url": "/?%ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input",
+    "user_agent": "libredtail-http",
+    "hostname": "193.11.189.38",
+    "protocol": "HTTP/1.1",
+    "content_type": "text/html",
+    "status": "200",
+    "length": "651"
+  },
+  "rule": {
+    "id": "86601",
+    "description": "Suricata: Alert - ET WEB_SERVER Generic PHP Remote File Include",
+    "level": 3,
+    "groups": ["ids", "suricata"]
+  }
+}

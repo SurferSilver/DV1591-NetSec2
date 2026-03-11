@@ -1,0 +1,32 @@
+{
+  "timestamp": "2026-03-01T20:15:02.292857+0100",
+  "src_ip": "37.120.213.13",
+  "src_port": "55148",
+  "dest_ip": "193.11.189.37",
+  "dest_port": "80",
+  "host_name": "abbe1-HP-Compaq-Pro-4300-SFF-PC",
+  "proto": "TCP",
+  "alert": {
+    "signature": "ET WEB_SERVER /bin/sh In URI Possible Shell Command Execution Attempt",
+    "signature_id": "2011465",
+    "severity": "1",
+    "action": "allowed",
+    "category": "Web Application Attack"
+  },
+  "http": {
+    "method": "POST",
+    "url": "/cgi-bin/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/.%2e/bin/sh",
+    "user_agent": "libredtail-http",
+    "hostname": "193.11.189.38",
+    "protocol": "HTTP/1.1",
+    "content_type": "text/html",
+    "status": "200",
+    "length": "651"
+  },
+  "rule": {
+    "id": "86601",
+    "description": "Suricata: Alert - ET WEB_SERVER /bin/sh In URI Possible Shell Command Execution Attempt",
+    "level": 3,
+    "groups": ["ids", "suricata"]
+  }
+}

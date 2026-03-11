@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-03-03T05:06:41.378425+0100",
+  "src_ip": "123.108.93.66",
+  "src_port": "50152",
+  "dest_ip": "193.11.189.38",
+  "dest_port": "445",
+  "host_name": "abbe2-HP-Compaq-Pro-4300-SFF-PC",
+  "proto": "TCP",
+  "alert": {
+    "signature": "ET EXPLOIT Possible ETERNALBLUE Probe MS17-010 (Generic Flags)",
+    "signature_id": "2025992",
+    "severity": "1",
+    "action": "allowed",
+    "category": "A Network Trojan was detected",
+    "malware_family": "ETERNALBLUE"
+  },
+  "rule": {
+    "id": "86601",
+    "description": "Suricata: Alert - ET EXPLOIT Possible ETERNALBLUE Probe MS17-010 (Generic Flags)",
+    "level": 3,
+    "groups": ["ids", "suricata"]
+  }
+}
