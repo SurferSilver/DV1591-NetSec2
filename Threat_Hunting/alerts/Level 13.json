@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-03-06T07:17:30.324+0100",
+  "host_ip": "193.11.189.38",
+  "host_name": "abbe2-HP-Compaq-Pro-4300-SFF-PC",
+  "vulnerability": {
+    "cve": "CVE-2026-2781",
+    "title": "CVE-2026-2781 affects libnss3",
+    "severity": "Critical",
+    "score": "9.8",
+    "package": {
+      "name": "libnss3",
+      "version": "2:3.98-1ubuntu0.1",
+      "architecture": "amd64",
+      "source": "nss"
+    },
+    "assigner": "mozilla",
+    "published": "2026-02-24T14:16:26Z",
+    "updated": "2026-02-26T21:28:58Z",
+    "reference": "https://ubuntu.com/security/CVE-2026-2781, https://www.cve.org/CVERecord?id=CVE-2026-2781",
+    "rationale": "Integer overflow in the Libraries component in NSS. This vulnerability affects Firefox < 148, Firefox ESR < 140.8, Thunderbird < 148, and Thunderbird < 140.8.",
+    "cvss3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+  },
+  "rule": {
+    "id": "23506",
+    "description": "CVE-2026-2781 affects libnss3",
+    "level": 13,
+    "groups": ["vulnerability-detector"]
+  }
+}

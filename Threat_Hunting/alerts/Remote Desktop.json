@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-03-07T21:15:57.931568+0100",
+  "src_ip": "80.94.95.83",
+  "src_port": "64371",
+  "dest_ip": "193.11.189.37",
+  "dest_port": "3389",
+  "host_name": "abbe1-HP-Compaq-Pro-4300-SFF-PC",
+  "proto": "TCP",
+  "alert": {
+    "signature": "ET REMOTE_ACCESS MS Remote Desktop Administrator Login Request",
+    "signature_id": "2012709",
+    "severity": "3",
+    "action": "allowed",
+    "category": "Generic Protocol Command Decode"
+  },
+  "rule": {
+    "id": "86601",
+    "description": "Suricata: Alert - ET REMOTE_ACCESS MS Remote Desktop Administrator Login Request",
+    "level": 3,
+    "groups": ["ids", "suricata"]
+  }
+}
