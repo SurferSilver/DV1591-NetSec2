@@ -1,0 +1,14 @@
+# Set default text file handling
+* text=auto
+
+# Custom linguist overrides for GitHub language stats
+*.tex linguist-language=TeX
+*.bib linguist-language=BibTeX
+*.json linguist-language=JSON
+*.txt linguist-language=Text
+
+# Treat images as binary
+img/* binary
+
+# Exclude .gitattributes itself from linguist stats
+.gitattributes linguist-documentation=true
